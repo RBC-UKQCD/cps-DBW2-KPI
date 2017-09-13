@@ -16,6 +16,10 @@ mkdir -p $cps || true
 cd "$cps"
 
 export TIMEFORMAT="%R secs"
+#export LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
+#export PPCF=/bgsys/drivers/ppcfloor
+#export MPICH_CC=${PPCF}/gnu-linux-4.7.2/bin/powerpc64-bgq-linux-gcc
+#export MPICH_CXX=${PPCF}/gnu-linux-4.7.2/bin/powerpc64-bgq-linux-g++
 
 profile () {
     echo
@@ -31,12 +35,8 @@ profile autoconf
 cd "$cps"
 mkdir build-qmp
 cd build-qmp
-profile ../cps_pp-qmp/configure \
-    --enable-qmp=$prefix \
-    --enable-qio \
-    --enable-sse=no \
-    --enable-debug=no
-profile make
+profile ../cps_pp-qmp/configure --build=powerpc64-unknown-linux-gnu --host=powerpc64-bgq-linux --enable-target=bgq --enable-qmp=$prefix --enable-qio --enable-sse=no --enable-debug=no
+profile make -j60
 cd "$cps"
 
 echo

@@ -229,6 +229,7 @@ static void BGQtoLogical3d(int * xyzt, int *Lxyzt, int *abcde, int *Labcde);
 static void BGQtoLogical4d(int * xyzt, int *Lxyzt, int *abcde, int *Labcde);
 static void BGQtoLogical4d_AEBCD(int * xyzt, int *Lxyzt, int *abcde, int *Labcde);
 static void BGQtoLogical4d_ABECD(int * xyzt, int *Lxyzt, int *abcde, int *Labcde);
+static void BGQtoLogical4d_ABDCE(int * xyzt, int *Lxyzt, int *abcde, int *Labcde);
 static void LogicaltoBGQ(int * xyzt, int *abcde, int *Labcde);
 
 static void BGQtoLogical3d(int * xyzt, int *Lxyzt, int *abcde, int *Labcde)
@@ -267,6 +268,22 @@ static void BGQtoLogical3d(int * xyzt, int *Lxyzt, int *abcde, int *Labcde)
   if ( Cz==0 )  xyzt[Z] = abcde[B];
   else          xyzt[Z] = 2*Labcde[B]-1-abcde[B];
 
+
+}
+
+static void BGQtoLogical4d_ABDCE(int * xyzt, int *Lxyzt, int *abcde, int *Labcde)
+{
+  Lxyzt[X] = Labcde[A];
+  Lxyzt[Y] = Labcde[B];
+  Lxyzt[Z] = Labcde[D];
+  Lxyzt[T] = Labcde[C]*Labcde[E];
+
+  xyzt[X] = abcde[A];
+  xyzt[Y] = abcde[B];
+  xyzt[Z] = abcde[D];
+
+  if ( abcde[E] == 0 ) xyzt[T] = abcde[C];
+  else                 xyzt[T] = 2*Labcde[C]-1-abcde[C];
 
 }
 
@@ -353,6 +370,7 @@ static void BGQtoLogical(int * xyzt, int *Lxyzt, int *abcde, int *Labcde)
   if (bgq3d==1) BGQtoLogical3d(xyzt,Lxyzt,abcde,Labcde);
   else if (bgq3d==2) BGQtoLogical4d_AEBCD(xyzt,Lxyzt,abcde,Labcde);
   else if (bgq3d==3) BGQtoLogical4d_ABECD(xyzt,Lxyzt,abcde,Labcde);
+  else if (bgq3d==4) BGQtoLogical4d_ABDCE(xyzt,Lxyzt,abcde,Labcde);
   else BGQtoLogical4d(xyzt,Lxyzt,abcde,Labcde);
 
 }
@@ -614,6 +632,7 @@ QMP_init_machine_i(int* argc, char*** argv)
   //printf("%i %i %p %p\n", first, last, c, a);
   if( c && (strcmp(c, "native")!=0) && (strcmp(c, "native3d")!=0) 
    && (strcmp(c, "nativeAEBCD")!=0)
+   && (strcmp(c, "nativeABDCE")!=0)
    && (strcmp(c, "nativeABECD")!=0) ) {
     fprintf(stderr, "unknown argument to -qmp-geom: %s\n", c);
     QMP_abort(-1);
@@ -650,6 +669,11 @@ QMP_init_machine_i(int* argc, char*** argv)
       QMP_global_m->amap=0;
     } else if ( c && strcmp(c, "nativeABECD")==0 ) {
       bgq3d=3;
+      set_native_machine();
+      nd = QMP_global_m->ndim;
+      QMP_global_m->amap=0;
+    } else if ( c && strcmp(c, "nativeABDCE")==0 ) {
+      bgq3d=4;
       set_native_machine();
       nd = QMP_global_m->ndim;
       QMP_global_m->amap=0;

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$cps" ] ; then
-    cps=$(cd $(pwd)/../; pwd)/cps-build/public
+    cps=$(cd $(pwd)/../; pwd)/cps-build/DBW2-KPI-qmpABDCE
 fi
 
 # public: compiled with openmpi-2.0.1, configured with -enalbe-qmp=$prefix
